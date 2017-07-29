@@ -57,8 +57,8 @@ module Notifications
       listeners_for(name).any?
     end
 
-    # This is a sync queue, so there is no waiting.
     def wait
+      Fiber.yield
     end
 
     module Subscribers # :nodoc:
@@ -73,10 +73,6 @@ module Notifications
       end
 
       class Evented # :nodoc:
-        def self.timestack
-          @@timestack ||= Hash(Fiber, Array(Time)).new { |h, k| h[k] = [] of Time }
-        end
-
         def initialize(@pattern : String?, @delegate : Listener | Subscriber)
         end
 
@@ -105,16 +101,20 @@ module Notifications
       end
 
       class Timed < Evented
+        def self.timestack
+          @@timestack ||= Hash(Fiber, Array(Time)).new { |h, k| h[k] = [] of Time }
+        end
+
         def publish(name, started, finish, id, payload)
           @delegate.call Event.new(name, started, Time.now, id, payload)
         end
 
         def start(name, id, payload)
-          self.class.timestack[Fiber.current].push Time.now
+          Timed.timestack[Fiber.current].push Time.now
         end
 
         def finish(name, id, payload)
-          started = self.class.timestack[Fiber.current].pop
+          started = Timed.timestack[Fiber.current].pop
           delegate = @delegate
           case delegate
           when TimedListener

@@ -1,4 +1,5 @@
-require "./spec_helper"
+require "../spec_helper"
+require "../../src/notifications/subscribers/log_subscriber"
 
 module NotificationsTest
   class MyLogSubscriber < Notifications::LogSubscriber
@@ -16,7 +17,7 @@ module NotificationsTest
     end
 
     def bar(event)
-      info "#{color("cool", :red)}, #{color("isn't it?", :blue, true)}"
+      info "#{"cool".colorize(:red)}, #{"isn't it?".colorize(:blue).mode(:bold)}"
     end
 
     def puke(event)
@@ -37,7 +38,7 @@ module NotificationsTest
       end
       Notifications.instrument("bar.namespace", Notifications::Payload.new)
 
-      log.to_s.should eq "\e[31mcool\e[0m, \e[1m\e[34misn't it?\e[0m\n"
+      log.to_s.should eq "\e[31mcool\e[0m, \e[34;1misn't it?\e[0m\n"
     end
 
     it "loggs" do

@@ -14,7 +14,7 @@ module Notifications
       begin
         yield payload
       rescue e : Exception
-        payload.exception = e
+        payload["exception"] = e
         raise e
       ensure
         finish name, payload

@@ -40,11 +40,29 @@ Notifications.instrument "other.event"
 puts called
 ```
 
-TODO: Write usage instructions here
+### DB::LogSubscriber
 
-## Development
+Do you want debug info for the crystal-db shard?
 
-TODO: Write development instructions here
+Create a log subscriber
+
+```crystal
+require "notifications/subscribers/db_log_subscriber"
+
+Notifications::LogSubscriber.logger = Logger.new(STDOUT).tap do |logger|
+  logger.level = Logger::Severity::DEBUG
+  logger.formatter = Logger::Formatter.new do |severity, datetime, progname, message, io|
+    io << message
+  end
+end
+```
+
+This will now print the following lines to `STDOUT`
+
+```
+  SQL (361.0µs)  create table if not exists a (i int not null, str text not null);
+  SQL (51.0µs)  SELECT i, str FROM a WHERE i = ?
+```
 
 ## Contributing
 

@@ -1,20 +1,24 @@
 require "secure_random"
-require "./notifications/payload"
 require "./notifications/listeners"
 require "./notifications/notifier"
 require "./notifications/fanout"
 require "./notifications/event"
 require "./notifications/instrumenter"
 require "./notifications/subscriber"
-require "./notifications/log_subscriber"
 
 module Notifications
-  def self.notifier=(notifier)
-    @@notifier = notifier
-  end
+  NOTIFIER     = Fanout.new
+  INSTRUMENTER = Instrumenter.new(NOTIFIER)
+
+  alias PayloadValue = String | Int64 | Int32 | Float64 | Bool | Exception
+  alias Payload = Hash(String, PayloadValue)
 
   def self.notifier
-    @@notifier ||= Fanout.new
+    NOTIFIER
+  end
+
+  def self.instrumenter
+    INSTRUMENTER
   end
 
   def self.publish(name, started, finish, id, payload)
@@ -33,6 +37,14 @@ module Notifications
     if notifier.listening?(name)
       instrumenter.instrument(name, payload) { }
     end
+  end
+
+  def self.subscribe(subscriber : Subscriber | Event ->)
+    notifier.subscribe(nil, subscriber)
+  end
+
+  def self.subscribe(&block : Event ->)
+    notifier.subscribe(nil, block)
   end
 
   def self.subscribe(pattern, subscriber : Subscriber)
@@ -56,21 +68,5 @@ module Notifications
 
   def self.unsubscribe(subscriber_or_name)
     notifier.unsubscribe(subscriber_or_name)
-  end
-
-  def self.instrumenter
-    InstrumentationRegistry::INSTANCE.instrumenter_for(notifier)
-  end
-
-  class InstrumentationRegistry # :nodoc:
-    INSTANCE = new
-
-    def initialize
-      @registry = Hash(Fanout, Instrumenter).new
-    end
-
-    def instrumenter_for(notifier)
-      @registry[notifier] ||= Instrumenter.new(notifier)
-    end
   end
 end

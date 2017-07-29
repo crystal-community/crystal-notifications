@@ -4,6 +4,11 @@ version: 0.1.0
 authors:
   - Benoist Claassen <benoist.claassen@gmail.com>
 
-crystal: 0.22.0
+development_dependencies:
+  sqlite3:
+    github: crystal-lang/crystal-sqlite3
+    branch: master
+
+crystal: 0.23.0
 
 license: MIT

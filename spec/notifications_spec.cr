@@ -78,7 +78,6 @@ module NotificationsTest
     end
 
     it "allows nested events" do
-      Notifications.notifier = Notifications::Fanout.new
       events = [] of String
       Notifications.notifier.subscribe do |event|
         events << event.name
@@ -97,7 +96,6 @@ module NotificationsTest
     end
 
     it "publishes when exceptions are raised" do
-      Notifications.notifier = Notifications::Fanout.new
       events = [] of String
       Notifications.notifier.subscribe do |event|
         events << event.name
@@ -115,7 +113,6 @@ module NotificationsTest
     end
 
     it "publishes when instrumented without a block" do
-      Notifications.notifier = Notifications::Fanout.new
       events = [] of String
       Notifications.notifier.subscribe do |event|
         events << event.name
@@ -128,18 +125,17 @@ module NotificationsTest
     end
 
     it "publishes events with details" do
-      Notifications.notifier = Notifications::Fanout.new
       events = [] of Event
       Notifications.notifier.subscribe do |event|
         events << event
       end
 
-      Notifications.instrument("outer", Notifications::Payload.new.tap { |p| p.message = "test" }) do
+      Notifications.instrument("outer", Notifications::Payload.new.tap { |p| p["message"] = "test" }) do
         Notifications.instrument("inner")
       end
 
       events.first.name.should eq "inner"
-      events.last.payload.message.should eq "test"
+      events.last.payload["message"].should eq "test"
     end
   end
 end

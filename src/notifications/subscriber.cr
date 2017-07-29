@@ -1,22 +1,18 @@
 module Notifications
   class Subscriber
+    macro inherited
+      INSTANCE = self.new
+    end
+
     macro attach_to(namespace)
-      subscriber = {{@type}}.new
+      subscriber = {{@type}}::INSTANCE
       {% for event in @type.methods %}
         {% if event.visibility == :public && event.args.first && event.args.size == 1 %}
           pattern = "{{event.name}}.{{namespace.id}}"
-          subscriber.callers[pattern] = ->(e : Event) { subscriber.{{event.name}}(e) }
+          subscriber.callers[pattern] = ->(e : ::Notifications::Event) { subscriber.{{event.name}}(e) }
           Notifications.subscribe(pattern, subscriber)
         {% end %}
       {% end %}
-    end
-
-    getter :patterns # :nodoc:
-    @queue_key : String
-
-    def initialize
-      @queue_key = [self.class.name, object_id].join "-"
-      @patterns = [] of String
     end
 
     def callers

@@ -1,23 +1,9 @@
 require "../src/notifications"
 
-called = 0
-
-# Subscribe to some event
-Notifications.subscribe "some.event" do |event|
-  called += 1
+Notifications.subscribe do |event|
+  pp event
 end
 
-# Subscribe other event
-Notifications.subscribe "other.event" do |event|
-  called += 1
+Notifications.instrument "outer" do
+  Notifications.instrument "inner"
 end
-
-# Subscribe same event
-Notifications.subscribe "other.event" do |event|
-  called += 1
-end
-
-Notifications.instrument "some.event"
-Notifications.instrument "other.event"
-
-puts called

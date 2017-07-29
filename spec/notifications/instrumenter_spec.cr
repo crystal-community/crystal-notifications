@@ -38,11 +38,11 @@ module NotificationsTest
     it "yield the payload" do
       notifier = TestNotifier.new
       instrumenter = Instrumenter.new notifier
-      instrumenter.instrument("awesome") { |p| p.message = "test" }.should eq "test"
+      instrumenter.instrument("awesome") { |p| p["message"] = "test" }.should eq "test"
       notifier.finishes.size.should eq 1
       name, _, payload = notifier.finishes.first
       name.should eq "awesome"
-      payload.message.should eq "test"
+      payload["message"].should eq "test"
     end
 
     it "tests start" do

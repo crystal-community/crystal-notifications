@@ -57,16 +57,56 @@ Notifications::LogSubscriber.logger = Logger.new(STDOUT).tap do |logger|
 end
 ```
 
-This will now print the following lines to `STDOUT`
+This will now print the following lines to `STDOUT` when queries have been executed
 
 ```
   SQL (361.0µs)  create table if not exists a (i int not null, str text not null);
   SQL (51.0µs)  SELECT i, str FROM a WHERE i = ?
 ```
 
+### Kemal::LogSubscriber with DB::LogSubscriber
+
+```crystal
+require "kemal"
+require "sqlite3"
+require "db"
+require "../src/notifications"
+require "../src/notifications/subscribers/kemal_log_subscriber"
+require "../src/notifications/subscribers/db_log_subscriber"
+
+Notifications::LogSubscriber.logger = Logger.new(STDOUT).tap do |logger|
+  logger.level = Logger::Severity::DEBUG
+end
+
+get "/" do
+  ::DB.open "sqlite3::memory:" do |db|
+    db.exec %(create table if not exists a (i int not null, str text not null);)
+    db.query("SELECT i, str FROM a WHERE i = ?", 23)
+  end
+
+  render "examples/template.ecr"
+end
+
+Kemal.run do |config|
+  config.logging = false #currently broken it will always log
+end
+
+```
+
+This will output the following:
+
+```
+I, [2017-07-29 23:57:02 +0200 #69971]  INFO -- : Processing by GET /?test=value
+I, [2017-07-29 23:57:02 +0200 #69971]  INFO -- :   Parameters url: {} query: {"test" => ["value"]} body: {}
+D, [2017-07-29 23:57:02 +0200 #69971] DEBUG -- :   SQL (642.0µs)  create table if not exists a (i int not null, str text not null);
+D, [2017-07-29 23:57:02 +0200 #69971] DEBUG -- :   SQL (41.0µs)  SELECT i, str FROM a WHERE i = ?
+I, [2017-07-29 23:57:02 +0200 #69971]  INFO -- :   Rendered examples/template.ecr (6.0µs)
+I, [2017-07-29 23:57:02 +0200 #69971]  INFO -- : Completed 200 in 1.85ms
+```
+
 ## Contributing
 
-1. Fork it ( https://github.com/[your-github-name]/notifications/fork )
+1. Fork it ( https://github.com/benoist/notifications/fork )
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)
@@ -74,4 +114,4 @@ This will now print the following lines to `STDOUT`
 
 ## Contributors
 
-- [[your-github-name]](https://github.com/[your-github-name]) Benoist Claassen - creator, maintainer
+- [benoist](https://github.com/benoist) Benoist Claassen - creator, maintainer

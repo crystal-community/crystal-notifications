@@ -45,6 +45,7 @@ module DB
         :magenta
       end
     end
+    attach_to(:db)
   end
 
   module QueryMethods
@@ -69,5 +70,3 @@ module DB
     end
   end
 end
-
-DB::LogSubscriber.attach_to(:db)

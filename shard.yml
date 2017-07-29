@@ -8,6 +8,9 @@ development_dependencies:
   sqlite3:
     github: crystal-lang/crystal-sqlite3
     branch: master
+  kemal:
+    github: kemalcr/kemal
+    branch: master
 
 crystal: 0.23.0
 

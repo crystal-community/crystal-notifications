@@ -18,6 +18,8 @@ get "/" do
   render "examples/template.ecr"
 end
 
-Kemal.run do |config|
-  config.logging = false #currently broken it will always log
+Kemal.config do |config|
+  config.logging = false
 end
+
+Kemal.run

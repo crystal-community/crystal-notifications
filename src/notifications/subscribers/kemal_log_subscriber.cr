@@ -31,7 +31,7 @@ module Kemal
   end
 end
 
-add_handler Kemal::InstrumentHandler.new, 0
+add_handler Kemal::InstrumentHandler.new
 
 module Kemal
   class LogSubscriber < Notifications::LogSubscriber

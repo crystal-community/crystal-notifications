@@ -70,9 +70,9 @@ This will now print the following lines to `STDOUT` when queries have been execu
 require "kemal"
 require "sqlite3"
 require "db"
-require "../src/notifications"
-require "../src/notifications/subscribers/kemal_log_subscriber"
-require "../src/notifications/subscribers/db_log_subscriber"
+require "notifications"
+require "notifications/subscribers/kemal_log_subscriber"
+require "notifications/subscribers/db_log_subscriber"
 
 Notifications::LogSubscriber.logger = Logger.new(STDOUT).tap do |logger|
   logger.level = Logger::Severity::DEBUG

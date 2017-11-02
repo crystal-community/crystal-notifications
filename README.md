@@ -108,7 +108,7 @@ I, [2017-07-29 23:57:02 +0200 #69971]  INFO -- : Completed 200 in 1.85ms
 
 ## Contributing
 
-1. Fork it ( https://github.com/benoist/notifications/fork )
+1. Fork it ( https://github.com/crystal-community/crystal-notifications/fork )
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)

@@ -9,7 +9,7 @@ Add this to your application's `shard.yml`:
 ```yaml
 dependencies:
   notifications:
-    github: benoist/notifications
+    github: crystal-community/crystal-notifications
 ```
 
 ## Usage

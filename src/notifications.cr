@@ -1,4 +1,4 @@
-require "secure_random"
+require "random/secure"
 require "./notifications/listeners"
 require "./notifications/notifier"
 require "./notifications/fanout"

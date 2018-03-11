@@ -32,7 +32,7 @@ module Notifications
     end
 
     private def unique_id
-      SecureRandom.hex(10)
+      Random::Secure.hex(10)
     end
   end
 end
